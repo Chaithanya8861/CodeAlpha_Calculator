@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NeoCalc | Advanced Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* prevents accidental text selection on double-click */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2639 0%, #0d1b2a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+            padding: 1.5rem;
+        }
+
+        /* main calculator card */
+        .calculator {
+            background: rgba(22, 34, 48, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 1.8rem;
+            width: 100%;
+            max-width: 480px;
+            transition: all 0.2s ease;
+        }
+
+        /* display screen */
+        .display {
+            background: #0a0f1c;
+            border-radius: 2rem;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 3px rgba(255, 255, 255, 0.05);
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .previous-operand {
+            min-height: 28px;
+            font-size: 1.1rem;
+            color: #8eaccd;
+            text-align: right;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .current-operand {
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: #f0f3f8;
+            text-align: right;
+            line-height: 1.2;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* button grid */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.9rem;
+        }
+
+        /* universal button style */
+        button {
+            background: #1e2a3a;
+            border: none;
+            border-radius: 1.6rem;
+            padding: 1.1rem 0;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #eef4ff;
+            cursor: pointer;
+            transition: all 0.15s linear;
+            box-shadow: 0 5px 0 #0e141f;
+            font-family: inherit;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0e141f;
+        }
+
+        /* special buttons */
+        .operator {
+            background: #2c4b6e;
+            color: #ffe6b3;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 0 #1a2f44;
+        }
+
+        .equals {
+            background: #e67e22;
+            color: white;
+            box-shadow: 0 5px 0 #b45f1b;
+            font-size: 1.9rem;
+        }
+
+        .clear {
+            background: #9e2d2f;
+            box-shadow: 0 5px 0 #6b1e1f;
+            color: #ffd9d9;
+        }
+
+        .delete {
+            background: #374d5c;
+            box-shadow: 0 5px 0 #1d2f3a;
+            font-size: 1.3rem;
+        }
+
+        /* zero spans two columns on grid */
+        .span-two {
+            grid-column: span 2;
+        }
+
+        /* hover effects (for desktop) */
+        @media (hover: hover) {
+            button:hover {
+                filter: brightness(1.08);
+                transform: translateY(-1px);
+                box-shadow: 0 6px 0 #0e141f;
+            }
+            button:active:hover {
+                transform: translateY(3px);
+                box-shadow: 0 2px 0 #0e141f;
+            }
+        }
+
+        /* responsive adjustments */
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 1.2rem;
+            }
+            button {
+                padding: 0.9rem 0;
+                font-size: 1.4rem;
+            }
+            .current-operand {
+                font-size: 2.2rem;
+            }
+            .operator {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <div class="display">
+        <div class="previous-operand" id="previousOperand">0</div>
+        <div class="current-operand" id="currentOperand">0</div>
+    </div>
+    <div class="buttons">
+        <!-- Row 1 -->
+        <button class="clear" id="clearBtn">AC</button>
+        <button class="delete" id="deleteBtn">⌫</button>
+        <button class="operator" data-operator="/">÷</button>
+        <button class="operator" data-operator="*">×</button>
+
+        <!-- Row 2 -->
+        <button class="number" data-number="7">7</button>
+        <button class="number" data-number="8">8</button>
+        <button class="number" data-number="9">9</button>
+        <button class="operator" data-operator="-">−</button>
+
+        <!-- Row 3 -->
+        <button class="number" data-number="4">4</button>
+        <button class="number" data-number="5">5</button>
+        <button class="number" data-number="6">6</button>
+        <button class="operator" data-operator="+">+</button>
+
+        <!-- Row 4 -->
+        <button class="number" data-number="1">1</button>
+        <button class="number" data-number="2">2</button>
+        <button class="number" data-number="3">3</button>
+        <button class="equals" id="equalsBtn">=</button>
+
+        <!-- Row 5: zero and decimal -->
+        <button class="number span-two" data-number="0">0</button>
+        <button class="number" data-number=".">.</button>
+    </div>
+</div>
+
+<script>
+    // ---------- DOM Elements ----------
+    const previousOperandElem = document.getElementById('previousOperand');
+    const currentOperandElem = document.getElementById('currentOperand');
+    const numberBtns = document.querySelectorAll('.number');
+    const operatorBtns = document.querySelectorAll('.operator');
+    const clearBtn = document.getElementById('clearBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const equalsBtn = document.getElementById('equalsBtn');
+
+    // ---------- Calculator State ----------
+    let currentInput = '0';       // string representation of current display (main operand)
+    let previousInput = '';       // previous operand before operator
+    let currentOperator = null;   // stored operator: '+', '-', '*', '/'
+    let waitingForNewOperand = false;   // true after operator is pressed, we expect next number
+    let expressionJustEvaluated = false; // flag to reset properly after '='
+
+    // ---------- Helper: update UI from state ----------
+    function updateDisplay() {
+        // format current value: if it's too long, but we keep full precision internally
+        let displayCurrent = currentInput === '' ? '0' : currentInput;
+        // Avoid showing trailing decimal dot for cleaner look, but keep functional
+        if (displayCurrent.endsWith('.')) displayCurrent = displayCurrent;
+        currentOperandElem.innerText = displayCurrent;
+
+        // build previous area: if operator exists or previous input exists show expression
+        if (previousInput !== '' && currentOperator !== null) {
+            let operatorSymbol = '';
+            if (currentOperator === '+') operatorSymbol = '+';
+            else if (currentOperator === '-') operatorSymbol = '−';
+            else if (currentOperator === '*') operatorSymbol = '×';
+            else if (currentOperator === '/') operatorSymbol = '÷';
+            previousOperandElem.innerText = `${previousInput} ${operatorSymbol}`;
+        } else if (previousInput !== '' && currentOperator === null && !waitingForNewOperand) {
+            // edge case after equals? but we keep clear
+            previousOperandElem.innerText = previousInput;
+        } else {
+            previousOperandElem.innerText = '';
+        }
+
+        // if waitingForNewOperand but previous and operator exist, we already show above.
+        // if just waiting after operator without any typing, current might hold previous number? but we preserve placeholder
+        if (waitingForNewOperand && previousInput !== '' && currentOperator !== null) {
+            // when user pressed operator and hasn't typed next number, currentInput might still show previous number.
+            // Instead, we can optionally show "0" as placeholder but we keep old number still visible until new input
+            // That's intuitive.
+        }
+    }
+
+    // ---------- Core Logic: handle number / decimal ----------
+    function inputNumber(numberStr) {
+        // If last result was evaluated, reset before starting fresh number
+        if (expressionJustEvaluated) {
+            clearAll();
+            expressionJustEvaluated = false;
+        }
+
+        // if waiting for new operand (operator pressed), replace current with new number
+        if (waitingForNewOperand) {
+            currentInput = numberStr;
+            waitingForNewOperand = false;
+            expressionJustEvaluated = false;
+        } else {
+            // avoid multiple leading zeros
+            if (currentInput === '0' && numberStr !== '.') {
+                currentInput = numberStr;
+            } else {
+                // handle decimal point: avoid duplicate decimal
+                if (numberStr === '.' && currentInput.includes('.')) return;
+                currentInput += numberStr;
+            }
+        }
+        // trim excessive leading zero? but keep as is.
+        updateDisplay();
+    }
+
+    // ---------- Handle operators (+, -, ×, ÷) ----------
+    function handleOperator(operator) {
+        // if we just evaluated something, treat previousInput as result and continue chain
+        if (expressionJustEvaluated) {
+            // previousInput should hold the result from previous equals, and currentOperator null.
+            // we want to keep the currentInput as the result, set it as previous and set operator.
+            if (previousInput === '' && currentInput !== '') {
+                previousInput = currentInput;
+                currentOperator = operator;
+                waitingForNewOperand = true;
+                expressionJustEvaluated = false;
+                updateDisplay();
+                return;
+            } else {
+                expressionJustEvaluated = false;
+            }
+        }
+
+        // if no currentInput means empty, ignore
+        if (currentInput === '' && previousInput === '') return;
+
+        // If there is already an operator and we are NOT waitingForNewOperand, compute first
+        if (currentOperator !== null && !waitingForNewOperand && previousInput !== '') {
+            // compute previous with current
+            const result = computeResult(previousInput, currentInput, currentOperator);
+            if (result === null || isNaN(result) || !isFinite(result)) {
+                handleError();
+                return;
+            }
+            // update previous to the result, current becomes empty? standard chaining: result becomes new previous
+            previousInput = formatNumber(result);
+            currentInput = '';
+            currentOperator = operator;
+            waitingForNewOperand = true;
+            updateDisplay();
+            return;
+        }
+
+        // First time operator: store previous operand as current, set operator, and trigger waiting state
+        if (currentInput !== '') {
+            previousInput = currentInput;
+            currentOperator = operator;
+            waitingForNewOperand = true;
+            currentInput = '';   // clear current for next input but display will show previous expression
+            updateDisplay();
+        } else if (previousInput !== '' && waitingForNewOperand) {
+            // if waiting and operator changed, just replace operator
+            currentOperator = operator;
+            updateDisplay();
+        }
+    }
+
+    // ---------- Compute result helper (returns number or null) ----------
+    function computeResult(aStr, bStr, op) {
+        const a = parseFloat(aStr);
+        const b = parseFloat(bStr);
+        if (isNaN(a) || isNaN(b)) return null;
+
+        let result;
+        switch (op) {
+            case '+':
+                result = a + b;
+                break;
+            case '-':
+                result = a - b;
+                break;
+            case '*':
+                result = a * b;
+                break;
+            case '/':
+                if (b === 0) return null; // division by zero
+                result = a / b;
+                break;
+            default:
+                return null;
+        }
+        // Round to avoid floating visual issues up to 10 decimals if needed but keep precision
+        if (Math.abs(result) > 1e12 || (Math.abs(result) < 1e-10 && result !== 0)) {
+            return result; // show scientific if needed but format later
+        }
+        return result;
+    }
+
+    // format number to avoid extreme decimal length (max 10 decimal places for cleanliness, but not losing accuracy)
+    function formatNumber(num) {
+        if (isNaN(num) || !isFinite(num)) return 'Error';
+        // Convert number to string with reasonable precision
+        let str = num.toString();
+        if (str.includes('.')) {
+            // trim trailing zeros but keep at most 10 decimal places
+            let parts = str.split('.');
+            let decimalPart = parts[1];
+            if (decimalPart.length > 10) {
+                decimalPart = decimalPart.substring(0, 10);
+                // rounding could be applied but it's okay for calculator
+                num = parseFloat(parts[0] + '.' + decimalPart);
+                str = num.toString();
+            }
+        }
+        // if huge number, keep scientific but nice
+        if (str.length > 18 && !str.includes('e')) {
+            // convert to exponential with max 12 digits
+            return num.toExponential(10);
+        }
+        return str;
+    }
+
+    // ---------- Equals operation ----------
+    function evaluate() {
+        if (expressionJustEvaluated) {
+            // avoid double evaluate, but if needed we just re-evaluate on same?
+            return;
+        }
+        // if missing operand or operator, ignore equals
+        if (currentOperator === null || previousInput === '' || waitingForNewOperand) {
+            // if only current input and no operator, do nothing
+            if (currentInput !== '' && previousInput === '') return;
+            // but if waitingForNewOperand and we press equals, we can compute using currentInput as existing? but currentInput may be empty? standard pattern: treat as if last operand repeated
+            if (waitingForNewOperand && previousInput !== '' && currentOperator !== null) {
+                // use previousInput as both operands if currentInput empty? e.g., 5 + = => 10
+                if (currentInput === '') {
+                    currentInput = previousInput;
+                }
+            } else {
+                return;
+            }
+        }
+
+        // at this point we have previousInput, currentInput, operator
+        let curVal = currentInput === '' ? previousInput : currentInput;
+        const result = computeResult(previousInput, curVal, currentOperator);
+        if (result === null || isNaN(result) || !isFinite(result)) {
+            handleError();
+            return;
+        }
+
+        const formattedResult = formatNumber(result);
+        previousInput = formattedResult;
+        currentInput = formattedResult;
+        currentOperator = null;
+        waitingForNewOperand = true;
+        expressionJustEvaluated = true;  // marks that we can start fresh if next number typed
+
+        updateDisplay();
+    }
+
+    // ---------- Error handler (infinite / division by zero) ----------
+    function handleError() {
+        previousInput = '';
+        currentInput = 'Error';
+        currentOperator = null;
+        waitingForNewOperand = true;
+        expressionJustEvaluated = true;
+        updateDisplay();
+        // reset after a short while automatically if user presses AC or any clear/number? but keep state, user must press AC
+    }
+
+    // ---------- Clear All (AC) ----------
+    function clearAll() {
+        currentInput = '0';
+        previousInput = '';
+        currentOperator = null;
+        waitingForNewOperand = false;
+        expressionJustEvaluated = false;
+        updateDisplay();
+    }
+
+    // ---------- Delete last character (⌫) ----------
+    function deleteLast() {
+        if (expressionJustEvaluated) {
+            // if we just evaluated, AC behavior? Usually delete on result resets? better to treat like clear start
+            clearAll();
+            return;
+        }
+        if (waitingForNewOperand && previousInput !== '' && currentOperator !== null) {
+            // if waiting, but no new number typed, nothing to delete? optionally fallback but ignore delete
+            return;
+        }
+        if (currentInput === 'Error') {
+            clearAll();
+            return;
+        }
+        if (currentInput.length > 1) {
+            currentInput = currentInput.slice(0, -1);
+            // if after deletion only '-' or just empty, reset to 0
+            if (currentInput === '' || currentInput === '-') {
+                currentInput = '0';
+            }
+        } else {
+            currentInput = '0';
+        }
+        // if after deletion currentInput is "0", we should exit any special states? but still consistent
+        updateDisplay();
+    }
+
+    // ---------- Keyboard Support ----------
+    function handleKeyboard(e) {
+        const key = e.key;
+        // Prevent default actions for calculator keys (avoid page scroll, input focus)
+        const controlKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+', '-', '*', '/', '=', 'Enter', 'Backspace', 'Delete', 'Escape'];
+        if (controlKeys.includes(key) || key === 'ArrowRight' || key === 'c' || key === 'C') {
+            e.preventDefault();
+        }
+
+        // Numbers and decimal
+        if (/[0-9]/.test(key)) {
+            inputNumber(key);
+        } else if (key === '.') {
+            inputNumber('.');
+        }
+        // Operators handling: map * × and / ÷, also + -
+        else if (key === '+' || key === '-' || key === '*' || key === '/') {
+            let mappedOp = key;
+            if (key === '*') mappedOp = '*';
+            if (key === '/') mappedOp = '/';
+            handleOperator(mappedOp);
+        }
+        // Enter key or "="
+        else if (key === '=' || key === 'Enter') {
+            evaluate();
+        }
+        // Backspace: delete last character
+        else if (key === 'Backspace') {
+            deleteLast();
+        }
+        // Escape or Delete key -> AC
+        else if (key === 'Escape' || key === 'Delete') {
+            clearAll();
+        }
+        // optional: pressing c or C clears all
+        else if (key === 'c' || key === 'C') {
+            clearAll();
+        }
+    }
+
+    // ---------- Reset Error after clear ----------
+    function safeNumberInputHandler(value) {
+        // if currentInput shows 'Error' then AC before typing new number
+        if (currentInput === 'Error') {
+            clearAll();
+        }
+        inputNumber(value);
+    }
+
+    // ---------- Add Event Listeners to UI ----------
+    numberBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const number = btn.getAttribute('data-number');
+            if (currentInput === 'Error') clearAll();
+            inputNumber(number);
+        });
+    });
+
+    operatorBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (currentInput === 'Error') clearAll();
+            let op = btn.getAttribute('data-operator');
+            if (op === '÷') op = '/';
+            if (op === '×') op = '*';
+            if (op === '−') op = '-';
+            handleOperator(op);
+        });
+    });
+
+    clearBtn.addEventListener('click', () => {
+        clearAll();
+    });
+
+    deleteBtn.addEventListener('click', () => {
+        if (currentInput === 'Error') clearAll();
+        else deleteLast();
+    });
+
+    equalsBtn.addEventListener('click', () => {
+        if (currentInput === 'Error') clearAll();
+        else evaluate();
+    });
+
+    // Add keyboard listener
+    window.addEventListener('keydown', handleKeyboard);
+
+    // initial display
+    updateDisplay();
+
+    // bonus tiny polish: handle double click glitch prevention
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // but we don't want to prevent click? only prevent focus stealing, not click
+        });
+        // restore default: actually mousedown prevent default can break keyboard? Not needed. comment for safety.
+    });
+    // Fix mousedown without breaking click events: just avoid it.
+    // but we can leave as is.
+</script>
+</body>
+</html>
