@@ -6,11 +6,9 @@ cat > README.md << 'EOF'
 
 A sleek, feature-rich calculator web application with support for all basic arithmetic operations, keyboard controls, and a modern glass-morphism design.
 
-![Calculator Demo]([https://images.unsplash.com/photo-1587145829366-a69be5fd0873?w=800&h=400&fit=crop](https://chaithanya8861.github.io/CodeAlpha_Calculator/))
-
 ## 🌟 Live Demo
 
-Experience the calculator live: **[https://chaithanya8861.github.io/CodeAlpha_Calculator/](https://chaithanya8861.github.io/CodeAlpha_Calculator/)**
+Experience the calculator live: **([https://chaithanya8861.github.io/CodeAlpha_Calculator/](https://chaithanya8861.github.io/CodeAlpha_Calculator/))**
 
 *(Replace the URL above with your actual GitHub Pages link)*
 
