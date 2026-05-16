@@ -10,7 +10,7 @@ A sleek, feature-rich calculator web application with support for all basic arit
 
 Experience the calculator live: **([https://chaithanya8861.github.io/CodeAlpha_Calculator/](https://chaithanya8861.github.io/CodeAlpha_Calculator/))**
 
-*(Replace the URL above with your actual GitHub Pages link)*
+*([Replace the URL above with your actual GitHub Pages link](https://chaithanya8861.github.io/CodeAlpha_Calculator/))*
 
 ## ✨ Features
 
