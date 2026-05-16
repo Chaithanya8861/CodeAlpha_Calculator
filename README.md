@@ -10,7 +10,7 @@ A sleek, feature-rich calculator web application with support for all basic arit
 
 Experience the calculator live: **([https://chaithanya8861.github.io/CodeAlpha_Calculator/](https://chaithanya8861.github.io/CodeAlpha_Calculator/))**
 
-*([Replace the URL above with your actual GitHub Pages link](https://chaithanya8861.github.io/CodeAlpha_Calculator/))*
+*((https://chaithanya8861.github.io/CodeAlpha_Calculator/))*
 
 ## ✨ Features
 
@@ -49,14 +49,4 @@ Experience the calculator live: **([https://chaithanya8861.github.io/CodeAlpha_C
 3. Click `=` to see the result
 4. Click `AC` to clear everything
 5. Click `⌫` to delete the last digit
-
-### Keyboard Controls
-| Key | Action |
-|-----|--------|
-| `0-9` | Enter numbers |
-| `.` | Add decimal point |
-| `+` `-` `*` `/` | Select operation |
-| `Enter` or `=` | Calculate result |
-| `Backspace` | Delete last character |
-| `Escape` or `Delete` | Clear all (AC) |
 
