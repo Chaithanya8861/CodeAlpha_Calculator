@@ -1,15 +1,12 @@
-#!/bin/bash
-
-# Create README.md file for Calculator project
-cat > README.md << 'EOF'
 # 🧮 NeoCalc - Modern Calculator
 
 A sleek, feature-rich calculator web application with support for all basic arithmetic operations, keyboard controls, and a modern glass-morphism design.
 
+![Calculator Demo](https://images.unsplash.com/photo-1587145829366-a69be5fd0873?w=800&h=400&fit=crop)
+
 ## 🌟 Live Demo
 
-Experience the calculator live: **([ https://chaithanya8861.github.io/CodeAlpha_Calculator/](https://chaithanya8861.github.io/CodeAlpha_Calculator/))**
-
+Experience the calculator live: **[https://chaithanya8861.github.io/CodeAlpha_Calculator/](https://chaithanya8861.github.io/CodeAlpha_Calculator/)**
 
 ## ✨ Features
 
@@ -49,3 +46,12 @@ Experience the calculator live: **([ https://chaithanya8861.github.io/CodeAlpha_
 4. Click `AC` to clear everything
 5. Click `⌫` to delete the last digit
 
+### Keyboard Controls
+| Key | Action |
+|-----|--------|
+| `0-9` | Enter numbers |
+| `.` | Add decimal point |
+| `+` `-` `*` `/` | Select operation |
+| `Enter` or `=` | Calculate result |
+| `Backspace` | Delete last character |
+| `Escape` or `Delete` | Clear all (AC) |
